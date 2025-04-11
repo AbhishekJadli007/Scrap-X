@@ -115,7 +115,7 @@ The application should now be running at http://localhost:8081 (or another port 
 
 ## Hackathon Team
 
-- Prasun S.
-- [Team Member 2]
-- [Team Member 3]
-- [Team Member 4]
+- Abhishek Jadli.
+- Prasun Singh
+- Aditya Raj Pandit
+- Aarav Prawin
