@@ -24,34 +24,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { DEFAULT_SCRAP_IMAGE } from "@/components/listing/ImageUploader";
-
-interface MaterialType {
-  id: string;
-  name: string;
-  category: string;
-}
-
-interface ScrapListing {
-  id: string;
-  title: string;
-  description: string | null;
-  material_type_id: string;
-  quantity: number;
-  unit: string;
-  listed_price: number;
-  address: string | null;
-  image_url: string | null;
-  geolocation: any;
-  status: string;
-  created_at: string;
-  updated_at: string;
-  seller_id: string;
-  material_type?: {
-    id: string;
-    name: string;
-    category: string;
-  } | null;
-}
+import RecyclabilityStats from "@/components/listing/RecyclabilityStats";
+import ListingRecyclabilityBreakdown from "@/components/listing/ListingRecyclabilityBreakdown";
+import EnvironmentalImpactStats from "@/components/listing/EnvironmentalImpactStats";
+import { ScrapListing, MaterialType } from "@/lib/types";
 
 const Listings = () => {
   const { user } = useAuth();
@@ -262,76 +238,37 @@ const Listings = () => {
   };
   
   return (
-    <div className="container mx-auto px-4 py-8">
-      <motion.div 
-        className="flex justify-between items-center mb-8"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">Scrap Listings</h1>
-          <p className="text-gray-600 mt-2">
-            Browse available recyclable materials
-          </p>
-        </div>
-        
-        <div className="flex gap-3">
-          <Button 
-            variant="outline" 
-            onClick={fetchData} 
-            disabled={loading}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
-          
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="container mx-auto px-4 py-8"
+    >
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+        <div className="flex items-center gap-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
+              <Button variant="outline" className="gap-2">
                 <Filter className="h-4 w-4" />
                 Filter
-                {(selectedMaterialTypes.length > 0 || selectedCategories.length > 0) && (
-                  <Badge className="ml-1 bg-teal-500">
-                    {selectedMaterialTypes.length + selectedCategories.length}
-                  </Badge>
-                )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64">
+            <DropdownMenuContent className="w-56">
               <div className="p-2">
-                <div className="flex justify-between items-center mb-2">
-                  <DropdownMenuLabel>Filter Options</DropdownMenuLabel>
-                  {(selectedMaterialTypes.length > 0 || selectedCategories.length > 0) && (
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={clearFilters}
-                      className="h-8 px-2 text-xs"
-                    >
-                      <X className="h-3 w-3 mr-1" />
-                      Clear all
-                    </Button>
-                  )}
-                </div>
-                
-                <DropdownMenuSeparator />
-                
                 <DropdownMenuGroup>
                   <DropdownMenuLabel className="text-sm">Categories</DropdownMenuLabel>
-                  {categories.map((category) => (
-                    <DropdownMenuCheckboxItem
-                      key={category}
-                      checked={selectedCategories.includes(category)}
-                      onCheckedChange={() => toggleCategory(category)}
-                    >
-                      {category}
-                    </DropdownMenuCheckboxItem>
-                  ))}
+                  <div className="max-h-60 overflow-y-auto">
+                    {categories.map((category) => (
+                      <DropdownMenuCheckboxItem
+                        key={category}
+                        checked={selectedCategories.includes(category)}
+                        onCheckedChange={() => toggleCategory(category)}
+                      >
+                        {category}
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                  </div>
                 </DropdownMenuGroup>
-                
-                <DropdownMenuSeparator className="my-2" />
                 
                 <DropdownMenuGroup>
                   <DropdownMenuLabel className="text-sm">Material Types</DropdownMenuLabel>
@@ -358,7 +295,17 @@ const Listings = () => {
             </Link>
           </Button>
         </div>
-      </motion.div>
+      </div>
+
+      {/* Add RecyclabilityStats component */}
+      <div className="mb-8">
+        <RecyclabilityStats listings={listings} />
+      </div>
+
+      {/* Add EnvironmentalImpactStats component */}
+      <div className="mb-8">
+        <EnvironmentalImpactStats listings={listings} />
+      </div>
       
       {loading ? (
         <div className="flex justify-center items-center py-20">
@@ -438,6 +385,10 @@ const Listings = () => {
                     {listing.description || "No description provided."}
                   </p>
                   
+                  <div className="mt-4">
+                    <ListingRecyclabilityBreakdown listing={listing} />
+                  </div>
+
                   <div className="flex mt-3 text-sm text-gray-500">
                     <div className="flex items-center mr-4">
                       <Package className="h-4 w-4 mr-1" />
@@ -494,8 +445,9 @@ const Listings = () => {
           ))}
         </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
 export default Listings;
+
