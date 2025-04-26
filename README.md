@@ -119,3 +119,4 @@ The application should now be running at http://localhost:8081 (or another port 
 - Prasun Singh
 - Aditya Raj Pandit
 - Aarav Prawin
+- Hariom Patidar
